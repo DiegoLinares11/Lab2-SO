@@ -2,13 +2,14 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/time.h>  // Para gettimeofday()
 
 int main() {
     pid_t pid_hijo, pid_nieto, pid_bisnieto;
-    clock_t start, end;
-    double cpu_time_used;
+    struct timeval start, end;
+    double tiempo_real;
 
-    start = clock();
+    gettimeofday(&start, NULL);  // Medición de tiempo real (no CPU time)
 
     pid_hijo = fork();
     if (pid_hijo == 0) {  // Proceso hijo
@@ -16,29 +17,31 @@ int main() {
         if (pid_nieto == 0) {  // Proceso nieto
             pid_bisnieto = fork();
             if (pid_bisnieto == 0) {  // Proceso bisnieto
-                // El bisnieto realiza un ciclo for de un millón de iteraciones
-                for (long i = 0; i < 1000000; i++);
-                return 0;  // Termina el bisnieto
+                for (long i = 0; i < 1000000; i++){
+                    printf("Iteracion, bisnieto: %ld\n", i);
+                }  
+                _exit(0);  // Usar _exit() en hijos
             }
-            // El nieto espera a que termine el bisnieto antes de continuar
             wait(NULL);
-            for (long i = 0; i < 1000000; i++);
-            return 0;  // Termina el nieto
+            for (long i = 0; i < 1000000; i++){
+                printf("Iteracion, nieto: %ld\n", i);
+            }  
+            _exit(0);
         }
-        // El hijo espera a que termine el nieto antes de continuar
         wait(NULL);
-        for (long i = 0; i < 1000000; i++);
-        return 0;  // Termina el hijo
+        for (long i = 0; i < 1000000; i++){
+            printf("Iteracion, hijo: %ld\n", i);
+        }  
+        _exit(0);
     }
 
-    // El proceso padre espera a que termine el hijo antes de continuar
     wait(NULL);
-    
-    end = clock();
+    gettimeofday(&end, NULL);  // Fin de medición
 
-    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    // Cálculo del tiempo real transcurrido en segundos
+    tiempo_real = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
 
-    printf("Tiempo transcurrido (con fork): %f segundos\n", cpu_time_used);
+    printf("Tiempo real (con fork): %f segundos\n", tiempo_real);
 
     return 0;
 }

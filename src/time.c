@@ -1,22 +1,30 @@
 #include <stdio.h>
 #include <time.h>
+#include <sys/time.h>  
 
 int main() {
-    clock_t start, end;
-    double cpu_time_used;
+    struct timeval start, end;
+    double tiempo_real;
 
-    start = clock();
+    gettimeofday(&start, NULL);  
 
-    // Tres ciclos for de un millón de iteraciones cada uno
-    for (long i = 0; i < 1000000; i++);
-    for (long i = 0; i < 1000000; i++);
-    for (long i = 0; i < 1000000; i++);
+    // Tres ciclos for vacíos de un millón de iteraciones cada uno
+    for (long i = 0; i < 1000000; i++) {
+        printf("Iteracion 1: %ld\n", i);
+    }  
+    for (long i = 0; i < 1000000; i++) {
+        printf("Iteracion 2: %ld\n", i);
+    }  
+    for (long i = 0; i < 1000000; i++) {
+        printf("Iteracion 3: %ld\n", i);
+    }  
 
-    end = clock();
+    gettimeofday(&end, NULL);  
 
-    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    // Cálculo del tiempo real transcurrido en segundos
+    tiempo_real = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
 
-    printf("Tiempo transcurrido: %f segundos\n", cpu_time_used);
+    printf("Tiempo real (secuencial): %f segundos\n", tiempo_real);
 
     return 0;
 }
