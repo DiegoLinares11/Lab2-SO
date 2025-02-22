@@ -40,3 +40,11 @@ rm /dev/shm/shared_memory
 ```
 Ahora el programa ipc_launcher se encargara de boorar todo espacio de memoria antes y despues de la ejecucion.
 Pero por que no se hace en ipc.c directamente ejecutando `shm_unlink(SHM_NAME);` Directamente? Pues porque si se haria de esta forma el segundo programa el de ipc_launcher ejecutaria el primer proceso escribiria en memoria lo que tiene que escribir y ya cuando sea turno del segundo proceso la memoria se habria borrado dando como resultado una escritura nueva en un espacio de memoria 'nueva' y no llegar a los resultados esperados.
+
+### Ejemplos de ejecucion: 
+
+Ejecucion del programa ipc:
+![Ejecución del programa ipc](src/images/ipc.png)
+
+Ejecución del programa ipc_launcher
+![Ejecución del programa ipc_launcher](src/images/ipcLauncher.png)
